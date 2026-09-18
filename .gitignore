@@ -1,7 +1,5 @@
 # Local Netlify folder
 .netlify
 
-# Secrets and local dependencies
-backend/.env
-backend/node_modules/
+# Local dependencies
 node_modules/
