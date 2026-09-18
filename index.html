@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>WEATHERGUARD AI | Weather Intelligence</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <div id="adminGate" class="admin-gate">
+        <div class="admin-gate-card">
+            <div class="logo-icon">WG</div>
+            <span class="gate-kicker">Secure sign in</span>
+            <h1 id="accessGateTitle">Welcome to WeatherGuard</h1>
+            <p id="accessGateDescription">Choose your position and sign in to continue to the operations center.</p>
+
+            <form id="adminAccessForm">
+                <label for="loginRoleSelect">Position</label>
+                <select id="loginRoleSelect" required>
+                    <option value="citizen">Citizen</option>
+                    <option value="reviewer">Reviewer</option>
+                    <option value="administrator">Administrator</option>
+                </select>
+
+                <div id="staffLoginFields">
+                    <label id="accessNameLabel" for="adminName">Full name</label>
+                    <input id="adminName" type="text" placeholder="Enter your full name" autocomplete="name">
+
+                    <label id="accessIdLabel" for="adminId">Staff ID</label>
+                    <input id="adminId" type="text" placeholder="Enter your staff ID" autocomplete="username">
+
+                    <label for="adminPassword">Password</label>
+                    <input id="adminPassword" type="password" placeholder="Enter your password" autocomplete="current-password">
+                </div>
+
+                <div id="citizenLoginFields" hidden>
+                    <label for="citizenNumber">Mobile number</label>
+                    <input id="citizenNumber" type="tel" inputmode="numeric" pattern="[0-9+ ()\-]{7,}" placeholder="Enter your mobile number" autocomplete="tel">
+                </div>
+
+                <button class="submit-btn" type="submit">Sign In</button>
+            </form>
+
+            <p id="adminAccessMessage" class="admin-access-message"></p>
+        </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            <div class="logo-icon">WG</div>
+            <div>
+                <h2>WEATHERGUARD <em>AI</em></h2>
+                <span>Weather intelligence platform</span>
+            </div>
+        </div>
+
+        <nav>
+            <button class="nav-item active" onclick="showSection('dashboard')">
+                📊 Dashboard
+            </button>
+
+            <button class="nav-item" onclick="showSection('reports')">
+                📍 Reports
+            </button>
+
+            <button class="nav-item" onclick="showSection('map')">
+                🗺️ Weather Map
+            </button>
+
+            <button class="nav-item" onclick="showSection('verification')">
+                🤖 Verification
+            </button>
+
+            <button class="nav-item" onclick="showSection('alerts')">
+                🚨 Alerts
+            </button>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="status">
+                <span class="online-dot"></span>
+                System Online
+            </div>
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <!-- HEADER -->
+        <header class="header">
+
+            <div>
+                <div class="eyebrow"><span class="live-pulse"></span> Live operations center</div>
+                <h1 id="pageTitle">National Weather Intelligence</h1>
+                <p>Real-time event monitoring, verification, and response</p>
+            </div>
+
+            <div class="header-right">
+                <span id="currentTime"></span>
+                <div class="role-control">
+                    <label for="roleSelect">Access</label>
+                    <select id="roleSelect" aria-label="Choose access role">
+                        <option value="citizen">Citizen</option>
+                        <option value="reviewer">Reviewer</option>
+                        <option value="administrator">Administrator</option>
+                    </select>
+                </div>
+                <span id="currentRoleLabel" class="current-role-label">Administrator</span>
+                <button class="notification-btn" id="notificationButton" type="button">Enable Alerts</button>
+            </div>
+
+        </header>
+
+
+        <!-- DASHBOARD -->
+        <section id="dashboard" class="section active-section">
+
+            <div class="alert-banner">
+                <span>⚠️</span>
+                <div>
+                    <strong>Potential Severe Weather Cluster</strong>
+                    <p>Heavy rainfall activity detected near Hyderabad</p>
+                </div>
+                <button onclick="showSection('alerts')">View Alert</button>
+            </div>
+
+            <div class="location-tools dashboard-location-tools">
+                <div>
+                    <strong>Monitor weather around you</strong>
+                    <p id="locationStatus">Approve access to attach your current location.</p>
+                </div>
+                <button class="location-btn" id="detectLocationButton" type="button">
+                    Use My Location
+                </button>
+            </div>
+
+            <div id="weatherStatus" class="weather-status" hidden></div>
+            <div id="locationRiskAlert" class="location-risk-alert" aria-live="assertive" hidden></div>
+
+
+            <!-- STAT CARDS -->
+            <div class="stats">
+
+                <div class="stat-card">
+                    <div class="stat-icon">📡</div>
+                    <div>
+                        <span>Total Reports</span>
+                        <h2 id="totalReports">1,248</h2>
+                        <small>↑ 12% today</small>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div>
+                        <span>Verified Reports</span>
+                        <h2>982</h2>
+                        <small>78.7% verified</small>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">⏳</div>
+                    <div>
+                        <span>Pending Reports</span>
+                        <h2>183</h2>
+                        <small>Awaiting review</small>
+                    </div>
+                </div>
+
+                <div class="stat-card danger">
+                    <div class="stat-icon">🚨</div>
+                    <div>
+                        <span>Active Events</span>
+                        <h2>23</h2>
+                        <small>5 high severity</small>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- CONTENT GRID -->
+            <div class="dashboard-grid">
+
+                <div class="panel large">
+
+                    <div class="panel-header">
+                        <div>
+                            <h3>Weather Events</h3>
+                            <p>Reports received over the last 7 days</p>
+                        </div>
+
+                        <select id="eventFilter">
+                            <option>All Events</option>
+                            <option>Heavy Rainfall</option>
+                            <option>Flood</option>
+                            <option>Thunderstorm</option>
+                            <option>Heatwave</option>
+                            <option>Strong Winds</option>
+                            <option>Fog</option>
+                        </select>
+                    </div>
+
+                    <canvas id="eventChart"></canvas>
+
+                </div>
+
+
+                <div class="panel">
+
+                    <div class="panel-header">
+                        <div>
+                            <h3>Event Distribution</h3>
+                            <p>Current active reports</p>
+                        </div>
+                    </div>
+
+                    <canvas id="distributionChart"></canvas>
+
+                </div>
+
+            </div>
+
+
+            <!-- RECENT EVENTS -->
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <h3>Recent Weather Events</h3>
+                        <p>Latest reports received by the platform</p>
+                    </div>
+
+                    <button class="primary-btn" onclick="showAllReports()">
+                        See All Reports
+                    </button>
+
+                </div>
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>Event</th>
+                                <th>Location</th>
+                                <th>Time</th>
+                                <th>Source</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="eventTable">
+
+                            <tr>
+                                <td>🌧️ Heavy Rainfall</td>
+                                <td>Hyderabad</td>
+                                <td>5:30 PM</td>
+                                <td>Citizen</td>
+                                <td><span class="badge pending">Pending</span></td>
+                            </tr>
+
+                            <tr>
+                                <td>⚡ Thunderstorm</td>
+                                <td>Warangal</td>
+                                <td>4:42 PM</td>
+                                <td>Weather Station</td>
+                                <td><span class="badge verified">Verified</span></td>
+                            </tr>
+
+                            <tr>
+                                <td>🌊 Flood</td>
+                                <td>Vijayawada</td>
+                                <td>3:18 PM</td>
+                                <td>Citizen</td>
+                                <td><span class="badge verified">Verified</span></td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- REPORTS -->
+        <section id="reports" class="section">
+
+            <div class="section-title">
+                <h2>Citizen Weather Reports</h2>
+                <p>Submit and monitor weather observations</p>
+            </div>
+
+            <div class="panel all-reports-panel" id="allReportsPanel">
+                <div class="panel-header">
+                    <div>
+                        <h3>All Weather Reports</h3>
+                        <p>Complete report history from all monitored locations</p>
+                    </div>
+                    <span class="report-count">3 reports</span>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Event</th>
+                                <th>Location</th>
+                                <th>Time</th>
+                                <th>Source</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="allReportsTable">
+                            <tr>
+                                <td>🌧️ Heavy Rainfall</td>
+                                <td>Hyderabad</td>
+                                <td>5:30 PM</td>
+                                <td>Citizen</td>
+                                <td><span class="badge pending">Pending</span></td>
+                            </tr>
+                            <tr>
+                                <td>⚡ Thunderstorm</td>
+                                <td>Warangal</td>
+                                <td>4:42 PM</td>
+                                <td>Weather Station</td>
+                                <td><span class="badge verified">Verified</span></td>
+                            </tr>
+                            <tr>
+                                <td>🌊 Flood</td>
+                                <td>Vijayawada</td>
+                                <td>3:18 PM</td>
+                                <td>Citizen</td>
+                                <td><span class="badge verified">Verified</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+            <div class="report-layout">
+
+                <div class="panel">
+
+                    <h3>Submit Weather Report</h3>
+
+                    <form id="reportForm">
+
+                        <label>Event Type</label>
+
+                        <select id="eventType" required>
+                            <option value="">Select Event</option>
+                            <option>Heavy Rainfall</option>
+                            <option>Flood</option>
+                            <option>Thunderstorm</option>
+                            <option>Heatwave</option>
+                            <option>Strong Winds</option>
+                            <option>Fog</option>
+                        </select>
+
+
+                        <input id="location" type="hidden">
+
+
+                        <label>Severity</label>
+
+                        <select id="severity">
+                            <option>Low</option>
+                            <option>Medium</option>
+                            <option>High</option>
+                            <option>Critical</option>
+                        </select>
+
+
+                        <label>Description</label>
+
+                        <textarea
+                            id="description"
+                            placeholder="Describe the weather event..."
+                            required
+                        ></textarea>
+
+
+                        <button class="submit-btn" type="submit">
+                            Submit Report
+                        </button>
+
+                    </form>
+
+                    <div id="successMessage" class="success-message">
+                        ✅ Report received — Pending Verification
+                    </div>
+
+                </div>
+
+
+                <div class="panel">
+
+                    <h3>How Verification Works</h3>
+
+                    <div class="process">
+
+                        <div>
+                            <span>1</span>
+                            <p>Report received</p>
+                        </div>
+
+                        <div>
+                            <span>2</span>
+                            <p>Location checked</p>
+                        </div>
+
+                        <div>
+                            <span>3</span>
+                            <p>Duplicate detection</p>
+                        </div>
+
+                        <div>
+                            <span>4</span>
+                            <p>AI-assisted verification</p>
+                        </div>
+
+                        <div>
+                            <span>5</span>
+                            <p>Event classification</p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- MAP -->
+        <section id="map" class="section">
+
+            <div class="section-title">
+                <h2>Interactive Weather Map</h2>
+                <p>Weather activity across India</p>
+            </div>
+
+            <div class="map-panel">
+
+                <div class="india-map">
+
+                    <div class="map-title">
+                        <span class="map-kicker">LIVE EVENT COVERAGE</span>
+                        INDIA WEATHER EVENTS
+                    </div>
+
+                    <div class="map-controls">
+                        <label>
+                            State
+                            <select id="stateSelect">
+                                <option value="Telangana">Telangana</option>
+                                <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                <option value="Maharashtra">Maharashtra</option>
+                                <option value="Delhi">Delhi</option>
+                                <option value="Rajasthan">Rajasthan</option>
+                            </select>
+                        </label>
+                        <label>
+                            Place
+                            <select id="placeSelect"></select>
+                        </label>
+                        <button id="focusPlaceButton" type="button">Focus Place</button>
+                    </div>
+
+                    <img
+                        class="india-map-image"
+                        src="https://simplemaps.com/static/svg/country/in/admin1/in.svg"
+                        alt="India map with state boundaries"
+                    >
+
+                    <div id="placeWeather" class="place-weather" aria-live="polite">
+                        Select a state and place to view local weather.
+                    </div>
+
+                    <div class="map-marker marker1 severity-high" onclick="showEvent('Hyderabad')">
+                        <i></i>
+                        <b>Hyderabad</b>
+                        <span>Hyderabad</span>
+                    </div>
+
+                    <div class="map-marker marker2 severity-medium" onclick="showEvent('Delhi')">
+                        <i></i>
+                        <b>Delhi</b>
+                        <span>Delhi</span>
+                    </div>
+
+                    <div class="map-marker marker3 severity-high" onclick="showEvent('Vijayawada')">
+                        <i></i>
+                        <b>Vijayawada</b>
+                        <span>Vijayawada</span>
+                    </div>
+
+                    <div class="map-marker marker4 severity-medium" onclick="showEvent('Rajasthan')">
+                        <i></i>
+                        <b>Rajasthan</b>
+                        <span>Rajasthan</span>
+                    </div>
+
+                    <div class="map-marker marker5 severity-low" onclick="showEvent('Mumbai')">
+                        <i></i>
+                        <b>Mumbai</b>
+                        <span>Mumbai</span>
+                    </div>
+
+                    <div class="map-legend">
+                        <strong>Severity</strong>
+                        <span><i class="legend-dot low"></i> Low</span>
+                        <span><i class="legend-dot medium"></i> Moderate</span>
+                        <span><i class="legend-dot high"></i> High</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- VERIFICATION -->
+        <section id="verification" class="section">
+
+            <div class="section-title">
+                <h2>AI Verification Results</h2>
+                <p>Automated confidence scoring for incoming reports</p>
+            </div>
+
+            <div class="ai-status-banner">
+                <span class="ai-status-icon">AI</span>
+                <div>
+                    <strong>Automated verification is active</strong>
+                    <p>Each report is scored using location, time, source, nearby reports, and live weather data.</p>
+                </div>
+                <span class="ai-status-live">● Processing live</span>
+            </div>
+
+            <div class="verified-reports">
+                <article class="verified-report-card">
+                    <div class="verified-report-topline">
+                        <span class="event-label">HEAVY RAINFALL</span>
+                        <span class="verified-badge">AI Verified</span>
+                    </div>
+                    <div class="verified-report-heading">
+                        <div>
+                            <h3>Hyderabad, Telangana</h3>
+                            <p>Citizen report · 5:30 PM</p>
+                        </div>
+                        <div class="confidence-score"><strong>94%</strong><span>confidence</span></div>
+                    </div>
+                    <div class="confidence-track"><span style="width: 94%"></span></div>
+                    <div class="ai-signals"><span>✓ Weather match</span><span>✓ Nearby reports</span><span>✓ Location confirmed</span></div>
+                </article>
+
+                <article class="verified-report-card">
+                    <div class="verified-report-topline">
+                        <span class="event-label">THUNDERSTORM</span>
+                        <span class="verified-badge">AI Verified</span>
+                    </div>
+                    <div class="verified-report-heading">
+                        <div>
+                            <h3>Warangal, Telangana</h3>
+                            <p>Weather station · 4:42 PM</p>
+                        </div>
+                        <div class="confidence-score"><strong>88%</strong><span>confidence</span></div>
+                    </div>
+                    <div class="confidence-track"><span style="width: 88%"></span></div>
+                    <div class="ai-signals"><span>✓ Station match</span><span>✓ Time confirmed</span><span>✓ Pattern match</span></div>
+                </article>
+
+                <article class="verified-report-card">
+                    <div class="verified-report-topline">
+                        <span class="event-label">FLOOD</span>
+                        <span class="verified-badge">AI Verified</span>
+                    </div>
+                    <div class="verified-report-heading">
+                        <div>
+                            <h3>Vijayawada, Andhra Pradesh</h3>
+                            <p>Citizen report · 3:18 PM</p>
+                        </div>
+                        <div class="confidence-score"><strong>81%</strong><span>confidence</span></div>
+                    </div>
+                    <div class="confidence-track"><span style="width: 81%"></span></div>
+                    <div class="ai-signals"><span>✓ Similar reports</span><span>✓ Location confirmed</span><span>! Source review</span></div>
+                </article>
+            </div>
+
+        </section>
+
+
+        <!-- ALERTS -->
+        <section id="alerts" class="section">
+
+            <div class="section-title">
+                <h2>Weather Alerts</h2>
+                <p>Potential severe weather clusters</p>
+            </div>
+
+
+            <div class="alert-card" data-alert-id="hyderabad-heavy-rain-2026-09-16">
+
+                <div class="alert-icon">
+                    🚨
+                </div>
+
+                <div class="alert-content">
+
+                    <span>HIGH SEVERITY</span>
+
+                    <h2>Potential Severe Weather Cluster</h2>
+
+                    <p>
+                        Multiple heavy rainfall reports detected
+                        within a nearby geographical area.
+                    </p>
+
+                    <div class="alert-details">
+
+                        <div>
+                            <strong>Location</strong>
+                            Hyderabad
+                        </div>
+
+                        <div>
+                            <strong>Reports</strong>
+                            27
+                        </div>
+
+                        <div>
+                            <strong>Event</strong>
+                            Heavy Rainfall
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <button id="acknowledgeAlertButton" onclick="acknowledgeAlert()">
+                    Acknowledge
+                </button>
+
+            </div>
+
+            <div id="alertStatus"></div>
+
+        </section>
+
+    </main>
+
+
+    <script src="scipt.js?v=2"></script>
+
+</body>
+</html>
