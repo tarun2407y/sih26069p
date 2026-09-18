@@ -32,10 +32,11 @@ const rolePermissions = {
 
 const alertStorageKey = "weatherguard_acknowledged_alerts";
 const notificationStorageKey = "weatherguard_notification_status";
+const apiBaseUrl = window.WEATHERGUARD_API_URL || "http://localhost:5000";
 let currentRole = localStorage.getItem("weatherguard_role") || "citizen";
-let citizenAuthenticated = localStorage.getItem("weatherguard_citizen_session") === "active";
-let administratorAuthenticated = localStorage.getItem("weatherguard_admin_session") === "active";
-let reviewerAuthenticated = localStorage.getItem("weatherguard_reviewer_session") === "active";
+let citizenAuthenticated = Boolean(localStorage.getItem("weatherguard_citizen_token"));
+let administratorAuthenticated = Boolean(localStorage.getItem("weatherguard_administrator_token"));
+let reviewerAuthenticated = Boolean(localStorage.getItem("weatherguard_reviewer_token"));
 let pendingAccessRole = currentRole;
 
 const roleSelect = document.getElementById("roleSelect");
@@ -108,7 +109,7 @@ roleSelect.addEventListener("change", function() {
     applyRolePermissions();
 });
 
-adminAccessForm.addEventListener("submit", function(event) {
+adminAccessForm.addEventListener("submit", async function(event) {
     event.preventDefault();
 
     const role = loginRoleSelect.value;
@@ -128,16 +129,33 @@ adminAccessForm.addEventListener("submit", function(event) {
         return;
     }
 
-    if (role === "citizen") {
-        citizenAuthenticated = true;
-        localStorage.setItem("weatherguard_citizen_session", "active");
-        localStorage.setItem("weatherguard_citizen_number", phone);
-    } else if (role === "administrator") {
-        administratorAuthenticated = true;
-        localStorage.setItem("weatherguard_admin_session", "active");
-    } else {
-        reviewerAuthenticated = true;
-        localStorage.setItem("weatherguard_reviewer_session", "active");
+    adminAccessMessage.textContent = "Signing in...";
+
+    try {
+        const response = await fetch(`${apiBaseUrl}/api/auth/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ role, name, id, password, phone })
+        });
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Unable to sign in.");
+        }
+
+        localStorage.setItem(`weatherguard_${role}_token`, result.token);
+        if (role === "citizen") {
+            citizenAuthenticated = true;
+            localStorage.setItem("weatherguard_citizen_number", phone);
+        } else if (role === "administrator") {
+            administratorAuthenticated = true;
+        } else {
+            reviewerAuthenticated = true;
+        }
+    } catch (error) {
+        adminAccessMessage.textContent = error.message === "Failed to fetch" ?
+            "The WeatherGuard server is unavailable. Start the backend and try again." : error.message;
+        return;
     }
 
     currentRole = role;

@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: weatherguard-api
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: CORS_ORIGINS
+        value: https://tarun2407y.github.io
+      - key: ADMIN_NAME
+        sync: false
+      - key: ADMIN_ID
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: REVIEWER_NAME
+        sync: false
+      - key: REVIEWER_ID
+        sync: false
+      - key: REVIEWER_PASSWORD
+        sync: false
